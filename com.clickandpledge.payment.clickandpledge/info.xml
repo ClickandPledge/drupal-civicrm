@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension key="com.clickandpledge.payment.clickandpledge" type="payment">
-  <downloadUrl>https://manual.clickandpledge.com/CiviCRM.html</downloadUrl>
+  <downloadUrl>https://github.com/ClickandPledge/drupal-civicrm/archive/master.zip</downloadUrl>
   <file>clickandpledge</file>
   <name>ClickandPledge</name>
   <description>Click &amp; Pledge Payment Processor</description>
@@ -12,7 +12,7 @@
     <author>Kamran Razvan</author>
     <email>Kamran@clickandpledge.com</email>
   </maintainer>
-  <releaseDate>2012-06-01</releaseDate>
+  <releaseDate>2013-06-12</releaseDate>
   <version>2.1</version>
   <develStage>stable</develStage>
   <compatibility><ver>4.2</ver></compatibility>
