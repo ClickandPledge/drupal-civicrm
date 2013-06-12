@@ -15,7 +15,7 @@
   <releaseDate>2013-06-12</releaseDate>
   <version>2.1</version>
   <develStage>stable</develStage>
-  <compatibility><ver>4.2</ver></compatibility>
+  <compatibility><ver>4.3</ver></compatibility>
   <comments>For support, please contact project team on the forums.</comments>
   <typeInfo>
    <userNameLabel>Account ID</userNameLabel>

@@ -29,7 +29,55 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
    */
   static protected $_mode = null;
   
-  var $responsecodes = array(2055=>'AccountGuid is not valid',2056=>'AccountId is not valid',2057=>'Username is not valid',2058=>'Password is not valid',2059=>'Invalid recurring parameters',2060=>'Account is disabled',2101=>'Cardholder information is null',2102=>'Cardholder information is null',2103=>'Cardholder information is null',2104=>'Invalid billing country',2105=>'Credit Card number is not valid',2106=>'Cvv2 is blank',2107=>'Cvv2 length error',2108=>'Invalid currency code',2109=>'CreditCard object is null',2110=>'Invalid card type ',2111=>'Card type not currently accepted',2112=>'Card type not currently accepted',2210=>'Order item list is empty',2212=>'CurrentTotals is null',2213=>'CurrentTotals is invalid',2214=>'TicketList lenght is not equal to quantity',2215=>'NameBadge lenght is not equal to quantity',2216=>'Invalid textonticketbody',2217=>'Invalid textonticketsidebar',2218=>'Invalid NameBadgeFooter',2304=>'Shipping CountryCode is invalid',2401=>'IP address is null',2402=>'Invalid operation',2501=>'WID is invalid',2502=>'Production transaction is not allowed. Contact support for activation.',2601=>'Invalid character in a Base-64 string',2701=>'ReferenceTransaction Information Cannot be NULL',2702=>'Invalid Refrence Transaction Information',2703=>'Expired credit card',2805=>'eCheck Account number is invalid',2807=>'Invalid payment method',2809=>'Invalid payment method',2811=>'eCheck payment type is currently not accepted',2812=>'Invalid check number',5001=>'Declined (general)',5002=>'Declined (lost or stolen card)',5003=>'Declined (fraud)',5004=>'Declined (Card expired)',5005=>'Declined (Cvv2 is not valid)',5006=>'Declined (Insufficient fund)',5007=>'Declined (Invalid credit card number)');
+  var $responsecodes = array(
+    2055=>'AccountGuid is not valid',
+    2056=>'AccountId is not valid',
+    2057=>'Username is not valid',
+    2058=>'Password is not valid',
+    2059=>'Invalid recurring parameters',
+    2060=>'Account is disabled',
+    2101=>'Cardholder information is null',
+    2102=>'Cardholder information is null',
+    2103=>'Cardholder information is null',
+    2104=>'Invalid billing country',
+    2105=>'Credit Card number is not valid',
+    2106=>'Cvv2 is blank',
+    2107=>'Cvv2 length error',
+    2108=>'Invalid currency code',
+    2109=>'CreditCard object is null',
+    2110=>'Invalid card type ',
+    2111=>'Card type not currently accepted',
+    2112=>'Card type not currently accepted',
+    2210=>'Order item list is empty',
+    2212=>'CurrentTotals is null',
+    2213=>'CurrentTotals is invalid',
+    2214=>'TicketList lenght is not equal to quantity',
+    2215=>'NameBadge lenght is not equal to quantity',
+    2216=>'Invalid textonticketbody',
+    2217=>'Invalid textonticketsidebar',
+    2218=>'Invalid NameBadgeFooter',
+    2304=>'Shipping CountryCode is invalid',
+    2401=>'IP address is null',
+    2402=>'Invalid operation',
+    2501=>'WID is invalid',
+    2502=>'Production transaction is not allowed. Contact support for activation.',
+    2601=>'Invalid character in a Base-64 string',
+    2701=>'ReferenceTransaction Information Cannot be NULL',
+    2702=>'Invalid Refrence Transaction Information',
+    2703=>'Expired credit card',
+    2805=>'eCheck Account number is invalid',
+    2807=>'Invalid payment method',
+    2809=>'Invalid payment method',
+    2811=>'eCheck payment type is currently not accepted',
+    2812=>'Invalid check number',
+    5001=>'Declined (general)',
+    5002=>'Declined (lost or stolen card)',
+    5003=>'Declined (fraud)',
+    5004=>'Declined (Card expired)',
+    5005=>'Declined (Cvv2 is not valid)',
+    5006=>'Declined (Insufficient fund)',
+    5007=>'Declined (Invalid credit card number)',
+  );
 
   /**
    * Constructor
@@ -173,8 +221,15 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 	$item_parts = explode(':',$params['description']);
 	if( trim( $item_parts[0] ) == 'Online Event Registration' )
 	{
-		 $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_contribution_type.is_deductible, civicrm_contribution_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
+		 /*
+     //for CiviCRM 4.2
+     $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_contribution_type.is_deductible, civicrm_contribution_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
 		inner join civicrm_contribution_type on civicrm_event.contribution_type_id=civicrm_contribution_type.id
+		WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
+    */
+    //for CiviCRM 4.3
+    $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_financial_type.is_deductible, civicrm_financial_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
+		inner join civicrm_financial_type on civicrm_event.financial_type_id=civicrm_financial_type.id
 		WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
 		$dao = CRM_Core_DAO::executeQuery($query);
 		$rows = 0;
@@ -203,8 +258,8 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 		}
 	
 		$ResultCode=$response->OperationResult->ResultCode;
-		// $transation_number=$response->OperationResult->TransactionNumber;
-		$transation_number = $response->OperationResult->VaultGUID; 
+		//$transation_number=$response->OperationResult->TransactionNumber;
+		 $transation_number=$response->OperationResult->VaultGUID;
 		
 		if($ResultCode=='0')
 		{
@@ -287,7 +342,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 	
   function buildXML( $params, $xmlpath )
   {
-	
+	//echo '<pre>';
+  //print_r($params);
+ // die();
 	$configValues = $this->_paymentProcessor;
 
 		$dom = new DOMDocument('1.0', 'UTF-8');
@@ -310,7 +367,7 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			 $applicationname=$dom->createElement('Name','CnP_CiviCRM_Drupal'); //CnP_CiviCRM_WordPress#CnP_CiviCRM_Joomla#CnP_CiviCRM_Drupal
 			 $applicationid=$application->appendChild($applicationname);
 			
-			 $applicationversion=$dom->createElement('Version','2.000.000.000.20130103');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
+			 $applicationversion=$dom->createElement('Version','2.001.000.000.20130304');  //2.000.000.000.20130103 Version-Minor change-Bug Fix-Internal Release Number -Release Date
 			 $applicationversion=$application->appendChild($applicationversion);
     
     		 $request = $dom->createElement('Request', '');
@@ -344,7 +401,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			}
     		 $ordermode=$dom->createElement('OrderMode',$orderMode);
     		 $ordermode=$order->appendChild($ordermode);
-			
+			//echo '<pre>';
+     // print_r($params);
+     // die();
 				//Check if it is Personal Campaign Page
 				if ( (isset( $params['contributionPageID'] ) && $params['contributionPageID'] != '') || (isset( $params['campaign_id'] ) && $params['campaign_id'] != '') || ( isset( $params['pcp_made_through_id'] ) && $params['pcp_made_through_id'] != '' ) )
 				{
@@ -629,9 +688,16 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 				}
 				elseif( trim( $item_parts[0] ) == 'Online Event Registration' )
 				{
-					$query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_contribution_type.is_deductible, civicrm_contribution_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
+					/*
+          //For CiviCRM 4.2
+          $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_contribution_type.is_deductible, civicrm_contribution_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
 					inner join civicrm_contribution_type on civicrm_event.contribution_type_id=civicrm_contribution_type.id
 					WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
+          */
+          //For CiviCRM 4.3
+           $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_financial_type.is_deductible, civicrm_financial_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
+		inner join civicrm_financial_type on civicrm_event.financial_type_id=civicrm_financial_type.id
+		WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
 					$dao = CRM_Core_DAO::executeQuery($query);
 					
 					if ($dao->fetch()) {
@@ -680,7 +746,10 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			
 			 //$recipt_org=$dom->createElement('OrganizationInformation','ClickandPledge');
 			// $recipt_org=$receipt->appendChild($recipt_org);
-			
+			//echo '<pre>';
+     // print_r($params);
+     // die();
+      $is_email_confirm = FALSE;
 			if ( isset( $params['contributionPageID'] ) && $params['contributionPageID'] != '' )
 			{
 				
@@ -699,7 +768,7 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 					}
 					else
 					{
-						if( $confirm_email_text != '' ){
+            if( $confirm_email_text != '' ){
 							$recipt_thanks=$dom->createElement('ThankYouMessage',$this->safeStringReplace( $confirm_email_text ));
 							$recipt_thanks=$receipt->appendChild($recipt_thanks);
 						}
@@ -708,15 +777,14 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			}
 			else
 			{			
-				if( $confirm_email_text != '' ){
+				$is_email_confirm = TRUE;
+        if( $confirm_email_text != '' ){
 					$recipt_thanks=$dom->createElement('ThankYouMessage',$this->safeStringReplace ($confirm_email_text ));
 					$recipt_thanks=$receipt->appendChild($recipt_thanks);
 				}
 			}
 			
-			 //$recipt_terms=$dom->createElement('TermsCondition','<![CDATA[All donations are tax deductible.]]>');
-			// $recipt_terms=$receipt->appendChild($recipt_terms);
-			
+			 	 
 			 $transation=$dom->createElement('Transaction','');
 	         $transation=$order->appendChild($transation);
 
@@ -768,7 +836,10 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			//No need of doing this as we sending unitdeductible above. But for clean coding we need to do this
 			if( isset( $params['contributionTypeID'] ) && $params['contributionTypeID'] != '' )
 			{
-			$query = "SELECT *  FROM  civicrm_contribution_type  WHERE  id = '" . $params['contributionTypeID'] . "'";
+			/*
+      $query = "SELECT *  FROM  civicrm_contribution_type  WHERE  id = '" . $params['contributionTypeID'] . "'";
+      */
+      $query = "SELECT *  FROM  civicrm_financial_type  WHERE  id = '" . $params['contributionTypeID'] . "'";
 				$dao = CRM_Core_DAO::executeQuery($query);
 				if ($dao->fetch()) {
 					if( $dao->is_deductible == '1' )
@@ -784,7 +855,10 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			}
 			elseif( isset( $params['contributionType_name'] ) && $params['contributionType_name'] != '' )
 			{
-			$query = "SELECT *  FROM  civicrm_contribution_type  WHERE  name = '" . $params['contributionType_name'] . "'";
+			/*
+      $query = "SELECT *  FROM  civicrm_contribution_type  WHERE  name = '" . $params['contributionType_name'] . "'";
+      */
+      $query = "SELECT *  FROM  civicrm_financial_type  WHERE  name = '" . $params['contributionType_name'] . "'";
 				$dao = CRM_Core_DAO::executeQuery($query);
 				if ($dao->fetch()) {
 					if( $dao->is_deductible == '1' )
@@ -800,10 +874,16 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			}
 			elseif( trim( $item_parts[0] ) == 'Online Event Registration' )
 			{
-				$query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_contribution_type.is_deductible, civicrm_contribution_type.name,civicrm_event.is_email_confirm  FROM  civicrm_event  
+				/*
+        $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_contribution_type.is_deductible, civicrm_contribution_type.name,civicrm_event.is_email_confirm  FROM  civicrm_event  
 				inner join civicrm_contribution_type on civicrm_event.contribution_type_id=civicrm_contribution_type.id
 				WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
-								
+        */
+				
+      $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_financial_type.is_deductible, civicrm_financial_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
+		inner join civicrm_financial_type on civicrm_event.financial_type_id=civicrm_financial_type.id
+		WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
+    
 				$dao = CRM_Core_DAO::executeQuery($query);
 				
 				if ($dao->fetch()) {
