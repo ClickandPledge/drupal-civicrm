@@ -103,7 +103,7 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
    */
   static function &singleton($mode, &$paymentProcessor) {
       $processorName = $paymentProcessor['name'];
-      if (self::$_singleton[$processorName] === NULL ) {
+      if (self::$_singleton === NULL || !array_key_exists($processorName, self::$_singleton) || self::$_singleton[$processorName] === NULL ) {
           self::$_singleton[$processorName] = new self($mode, $paymentProcessor);
       }
       return self::$_singleton[$processorName];
@@ -149,7 +149,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 	$allowed_currencies = array('USD','EUR','CAD','GBP');
 	$package_path = explode('CRM',dirname(__FILE__));
 	
-		  
+	if(!isset($params['description'])) {
+		$params['description'] = 'Contribution:Contribution';
+	}
 	  if(!file_exists($package_path[0].DIRECTORY_SEPARATOR.'packages'.DIRECTORY_SEPARATOR.'ClickandPledge'.DIRECTORY_SEPARATOR.'Countries.xml')){
 	return self::errorExit(9003, 'It appears that there is no countries XML file. If you continue to have problems please contact the site administrator.');
 	}
