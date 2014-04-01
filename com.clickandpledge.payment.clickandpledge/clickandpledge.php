@@ -806,7 +806,7 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 				$trans_recurr=$transation->appendChild($trans_recurr);
 
 							
-				if( $params['installments'] != '' )
+				if( isset($params['installments']) && $params['installments'] != '' )
 				{		
 					$total_installment=$dom->createElement('Installment',$params['installments']);
 					$total_installment=$trans_recurr->appendChild($total_installment);
@@ -821,7 +821,7 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 				$total_periodicity=$dom->createElement('Periodicity',ucfirst($params['frequency_unit']));
 				$total_periodicity=$trans_recurr->appendChild($total_periodicity);
 				
-				if( $params['installments'] != '' )
+				if( isset($params['installments']) && $params['installments'] != '' )
 				{		
 					$RecurringMethod=$dom->createElement('RecurringMethod','Subscription');
 					$RecurringMethod=$trans_recurr->appendChild($RecurringMethod);
