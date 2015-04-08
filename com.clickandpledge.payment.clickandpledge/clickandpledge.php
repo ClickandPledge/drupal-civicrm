@@ -232,8 +232,13 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
     //for CiviCRM 4.3
     $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_financial_type.is_deductible, civicrm_financial_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
 		inner join civicrm_financial_type on civicrm_event.financial_type_id=civicrm_financial_type.id
-		WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
-		$dao = CRM_Core_DAO::executeQuery($query);
+		WHERE  civicrm_event.title = %0 and payment_processor = %1 and civicrm_event.registration_end_date >= %2";
+    $params = array(
+      0 => array(trim($item_parts[1]), 'String'),
+      1 => array($params['payment_processor'], 'String'),
+      2 => array(date('Y-m-d'), 'String')
+    );
+		$dao = CRM_Core_DAO::executeQuery($query, $params);
 		$rows = 0;
 		if ($dao->fetch()) {
 			$rows = $dao->N;
@@ -412,8 +417,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 					//Check if it is any Campaign Pages attached to this contribution
 					if ( isset( $params['pcp_made_through_id'] ) && $params['pcp_made_through_id'] != '' )
 					{
-						$query = "SELECT *  FROM  civicrm_pcp  WHERE id = '" . $params['pcp_made_through_id'] . "'";
-						$dao = CRM_Core_DAO::executeQuery($query);
+						$query = "SELECT *  FROM  civicrm_pcp  WHERE id = %0";
+            $params = array(0 => array($params['pcp_made_through_id'], 'Integer'));
+						$dao = CRM_Core_DAO::executeQuery($query, $params);
 						if ($dao->fetch()) {
 							$Campaign=$dom->createElement('Campaign',$this->safeString(trim($dao->title), 73).'-p-'.$params['pcp_made_through_id']);
 							$Campaign=$order->appendChild($Campaign);
@@ -421,13 +427,15 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 					}
 					elseif((isset( $params['contributionPageID'] ) && $params['contributionPageID'] != ''))
 					{
-						$query = "SELECT *  FROM  civicrm_contribution_page  WHERE  id = '" . $params['contributionPageID'] . "'";
-						$dao = CRM_Core_DAO::executeQuery($query);
+						$query = "SELECT *  FROM  civicrm_contribution_page  WHERE  id = %0";
+            $params = array(0 => array($params['contributionPageID'], 'Integer'));
+						$dao = CRM_Core_DAO::executeQuery($query, $params);
 						if ($dao->fetch()) {
 							if( $dao->campaign_id != '' )
 							{
-								$query_campaign = "SELECT *  FROM  civicrm_campaign  WHERE  id = '" . $dao->campaign_id . "'";
-								$dao_campaign = CRM_Core_DAO::executeQuery($query_campaign);
+								$query_campaign = "SELECT *  FROM  civicrm_campaign  WHERE  id = %0";
+                $params = array(0 => array($dao->campaign_id, 'Integer'));
+								$dao_campaign = CRM_Core_DAO::executeQuery($query_campaign, $params);
 								if ($dao_campaign->fetch()) 
 								{
 									$Campaign=$dom->createElement('Campaign',$this->safeString(trim($dao_campaign->title), 73).'-a-'.$dao->campaign_id);
@@ -440,8 +448,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 					elseif((isset( $params['campaign_id'] ) && $params['campaign_id'] != '') && (!isset( $params['contributionPageID'] )))
 					{
 					
-						$query_campaign = "SELECT *  FROM  civicrm_campaign  WHERE  id = '" . $params['campaign_id'] . "'";
-						$dao_campaign = CRM_Core_DAO::executeQuery($query_campaign);
+						$query_campaign = "SELECT *  FROM  civicrm_campaign  WHERE  id = %0";
+            $params = array(0 => array($params['campaign_id'], 'Integer'));
+						$dao_campaign = CRM_Core_DAO::executeQuery($query_campaign, $params);
 						if ($dao_campaign->fetch()) 
 						{
 							$Campaign=$dom->createElement('Campaign',$this->safeString(trim($dao_campaign->title), 73).'-a-'.$params['campaign_id']);
@@ -659,8 +668,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
         $query = "SELECT *  FROM  civicrm_contribution_type  WHERE  id = '" . $params['contributionTypeID'] . "'";
         */
         //for CiviCRM 4.3
-        $query = "SELECT *  FROM  civicrm_financial_type  WHERE  id = '" . $params['contributionTypeID'] . "'";
-					$dao = CRM_Core_DAO::executeQuery($query);
+        $query = "SELECT *  FROM  civicrm_financial_type  WHERE  id = %0";
+          $params = array(0 => array($params['contributionTypeID'], 'Integer'));
+					$dao = CRM_Core_DAO::executeQuery($query, $params);
 					if ($dao->fetch()) {
 						if( $dao->is_deductible == '1' )
 						{
@@ -677,8 +687,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
         $query = "SELECT *  FROM  civicrm_contribution_type  WHERE  name = '" . $params['contributionType_name'] . "'";
         */
         //for CiviCRM 4.3
-        $query = "SELECT *  FROM  civicrm_financial_type  WHERE  id = '" . $params['contributionType_name'] . "'";
-					$dao = CRM_Core_DAO::executeQuery($query);
+        $query = "SELECT *  FROM  civicrm_financial_type  WHERE  id = %0";
+          $params = array(0 => array($params['contributionType_name'], 'Integer'));
+					$dao = CRM_Core_DAO::executeQuery($query, $params);
 					if ($dao->fetch()) {
 						if( $dao->is_deductible == '1' )
 						{
@@ -699,8 +710,13 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
           //For CiviCRM 4.3
            $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_financial_type.is_deductible, civicrm_financial_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
 		inner join civicrm_financial_type on civicrm_event.financial_type_id=civicrm_financial_type.id
-		WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
-					$dao = CRM_Core_DAO::executeQuery($query);
+		WHERE  civicrm_event.title = %0 and payment_processor = %1 and civicrm_event.registration_end_date >= %2";
+          $params = array(
+            0 => array(trim($item_parts[1]), 'String'),
+            1 => array($params['payment_processor'], 'String'),
+            2 => array(date('Y-m-d'), 'String')
+          );
+					$dao = CRM_Core_DAO::executeQuery($query, $params);
 					
 					if ($dao->fetch()) {
 						if( $dao->is_email_confirm == 1 ){
@@ -723,8 +739,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 					$itemid=$dom->createElement('ItemID','2');
 					$itemid=$orderitem2->appendChild($itemid);
 					
-					$query = "SELECT *  FROM  civicrm_product  WHERE  id = '" . $params['selectProduct'] . "'";
-					$dao = CRM_Core_DAO::executeQuery($query);
+					$query = "SELECT *  FROM  civicrm_product  WHERE  id = %0";
+          $params = array(0 => array($params['selectProduct'], 'Integer'));
+					$dao = CRM_Core_DAO::executeQuery($query, $params);
 					if ($dao->fetch()) {
 						$itemname=$dom->createElement('ItemName',$this->safeString(trim($dao->name), 50));
 						$itemname=$orderitem2->appendChild($itemname);
@@ -755,8 +772,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			if ( isset( $params['contributionPageID'] ) && $params['contributionPageID'] != '' )
 			{
 				
-				$query = "SELECT *  FROM  civicrm_contribution_page  WHERE  id = '" . $params['contributionPageID'] . "'";
-					$dao = CRM_Core_DAO::executeQuery($query);
+				$query = "SELECT * FROM civicrm_contribution_page  WHERE  id = %0";
+          $params = array(0 => array($params['contributionPageID'], 'Integer'));
+					$dao = CRM_Core_DAO::executeQuery($query, $params);
 					
 					if ($dao->fetch()) {
 					
@@ -860,8 +878,9 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 			/*
       $query = "SELECT *  FROM  civicrm_contribution_type  WHERE  name = '" . $params['contributionType_name'] . "'";
       */
-      $query = "SELECT *  FROM  civicrm_financial_type  WHERE  name = '" . $params['contributionType_name'] . "'";
-				$dao = CRM_Core_DAO::executeQuery($query);
+      $query = "SELECT *  FROM  civicrm_financial_type  WHERE  name = %0";
+        $params = array(0 => array($params['contributionType_name'], 'String'));
+				$dao = CRM_Core_DAO::executeQuery($query, $params);
 				if ($dao->fetch()) {
 					if( $dao->is_deductible == '1' )
 					{
@@ -884,9 +903,13 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
 				
       $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_financial_type.is_deductible, civicrm_financial_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
 		inner join civicrm_financial_type on civicrm_event.financial_type_id=civicrm_financial_type.id
-		WHERE  civicrm_event.title = '" . trim( $item_parts[1] ) . "' and payment_processor = '".$params['payment_processor']."' and civicrm_event.registration_end_date >= '".date('Y-m-d')."'";
-    
-				$dao = CRM_Core_DAO::executeQuery($query);
+		WHERE  civicrm_event.title = %0 and payment_processor = %1 and civicrm_event.registration_end_date >= %2";
+        $params = array(
+          0 => array(trim($item_parts[1]), 'String'),
+          1 => array($params['payment_processor'], 'String'),
+          2 => array(date('Y-m-d'), 'String')
+        );
+				$dao = CRM_Core_DAO::executeQuery($query, $params);
 				
 				if ($dao->fetch()) {
 					if( $dao->is_email_confirm == 1 ){
