@@ -233,12 +233,12 @@ class com_clickandpledge_payment_clickandpledge extends CRM_Core_Payment {
     $query = "SELECT civicrm_event.id as event_id,civicrm_event.title as title, civicrm_financial_type.is_deductible, civicrm_financial_type.name,civicrm_event.is_email_confirm,civicrm_event.confirm_email_text  FROM  civicrm_event  
 		inner join civicrm_financial_type on civicrm_event.financial_type_id=civicrm_financial_type.id
 		WHERE  civicrm_event.title = %0 and payment_processor = %1 and civicrm_event.registration_end_date >= %2";
-    $params = array(
+    $sql_params = array(
       0 => array(trim($item_parts[1]), 'String'),
       1 => array($params['payment_processor'], 'String'),
       2 => array(date('Y-m-d'), 'String')
     );
-		$dao = CRM_Core_DAO::executeQuery($query, $params);
+		$dao = CRM_Core_DAO::executeQuery($query, $sql_params);
 		$rows = 0;
 		if ($dao->fetch()) {
 			$rows = $dao->N;
