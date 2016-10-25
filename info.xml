@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<extension key="com.clickandpledge.payment.clickandpledge" type="module">
+  <downloadUrl>https://github.com/ClickandPledge/drupal-civicrm/archive/master.zip</downloadUrl>
+  <file>clickandpledge</file>
+  <name>ClickandPledge</name>
+  <description>Click &amp; Pledge Payment Processor</description>
+  <urls>
+    <url desc="Main Extension Page">http://manual.clickandpledge.com/CiviCRM-Drupal.html</url>
+  </urls>
+  <license>AGPL</license>
+  <maintainer>
+    <author>Kamran Razvan</author>
+    <email>Kamran@clickandpledge.com</email>
+  </maintainer>
+  <releaseDate>2013-08-20</releaseDate>
+  <version>2.2</version>
+  <develStage>stable</develStage>
+  <compatibility><ver>4.7</ver></compatibility>
+  <comments>This extension is abandoned. Please switch to a better supported payment processor.</comments>
+</extension>
