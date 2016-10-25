@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<extension key="com.clickandpledge.payment.clickandpledge" type="payment">
+<?xml version="1.0"?>
+<extension key="com.clickandpledge.payment.clickandpledge" type="module">
   <downloadUrl>https://github.com/ClickandPledge/drupal-civicrm/archive/master.zip</downloadUrl>
   <file>clickandpledge</file>
   <name>ClickandPledge</name>
@@ -17,21 +17,4 @@
   <develStage>stable</develStage>
   <compatibility><ver>4.3</ver></compatibility>
   <comments>For support, please contact project team on the forums.</comments>
-  <typeInfo>
-   <userNameLabel>Account ID</userNameLabel>
-   <passwordLabel>API Account GUID</passwordLabel>
-   <signatureLabel></signatureLabel>
-   <subjectLabel></subjectLabel>
-   <urlSiteDefault>https://manual.clickandpledge.com/</urlSiteDefault>
-   <urlApiDefault></urlApiDefault>
-   <urlRecurDefault>https://manual.clickandpledge.com/</urlRecurDefault>
-   <urlSiteTestDefault>https://manual.clickandpledge.com/</urlSiteTestDefault>
-   <urlApiTestDefault></urlApiTestDefault>
-   <urlRecurTestDefault>https://manual.clickandpledge.com/</urlRecurTestDefault>
-   <urlButtonDefault></urlButtonDefault>
-   <urlButtonTestDefault></urlButtonTestDefault>
-   <billingMode>form</billingMode>
-   <isRecur>1</isRecur>
-   <paymentType>1</paymentType>
-  </typeInfo>
 </extension>
